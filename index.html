@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>先见AI访问测试页面</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1e1e3f 50%, #2d1b69 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #ffffff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部样式 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(0, 245, 255, 0.3);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #b0b0ff;
+            margin-top: 5px;
+        }
+
+        /* 用户按钮样式 */
+        .user-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .user-btn:hover {
+            border-color: #00f5ff;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .user-btn.authenticated {
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            border-color: #00f5ff;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+        }
+
+        /* 主标题区域 */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ffffff, #b0b0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-subtitle {
+            font-size: 18px;
+            color: #b0b0ff;
+            margin-bottom: 30px;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: #8888aa;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 应用网格 */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* 应用卡片样式 */
+        .app-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .app-card:hover::before {
+            left: 100%;
+        }
+
+        .app-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(70%);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .app-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .app-card.unlocked:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 245, 255, 0.2);
+            border-color: #00f5ff;
+        }
+
+        /* 应用图标 */
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* 不同应用的图标颜色 */
+        .app-card[data-app="coding"] .app-icon {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+
+        .app-card[data-app="ai"] .app-icon {
+            background: linear-gradient(45deg, #a8e6cf, #00b894);
+        }
+
+        .app-card[data-app="algorithm"] .app-icon {
+            background: linear-gradient(45deg, #ffd93d, #ffa502);
+        }
+
+        .app-card[data-app="database"] .app-icon {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+        }
+
+        .app-card[data-app="network"] .app-icon {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+        }
+
+        .app-card[data-app="security"] .app-icon {
+            background: linear-gradient(45deg, #a29bfe, #6c5ce7);
+        }
+
+        .app-card[data-app="subject-tools"] .app-icon {
+            background: linear-gradient(45deg, #ff9ff3, #f368e0);
+        }
+
+        .app-card[data-app="textbook"] .app-icon {
+            background: linear-gradient(45deg, #55a3ff, #003d82);
+        }
+
+        .app-card[data-app="Mouse&Keyboard"] .app-icon {
+            background: linear-gradient(45deg, #ff7675, #d63031);
+        }
+
+        .app-card.locked .app-icon {
+            background: linear-gradient(45deg, #636e72, #2d3436) !important;
+        }
+
+        .app-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .app-description {
+            font-size: 14px;
+            color: #b0b0ff;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .app-status {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .status-locked {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .status-unlocked {
+            background: rgba(0, 245, 255, 0.2);
+            color: #00f5ff;
+            border: 1px solid rgba(0, 245, 255, 0.3);
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 107, 107, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 14px;
+        }
+
+        .app-card.unlocked .lock-icon {
+            background: rgba(0, 245, 255, 0.2);
+            color: #00f5ff;
+        }
+
+        /* 底部信息 */
+        .footer-info {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-info h3 {
+            color: #00f5ff;
+            margin-bottom: 15px;
+        }
+
+        .footer-info p {
+            color: #b0b0ff;
+            line-height: 1.6;
+        }
+
+        /* 验证弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e1e3f, #2d1b69);
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            border-radius: 20px;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #00f5ff;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            color: #b0b0ff;
+        }
+
+        .auth-btn {
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 245, 255, 0.4);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #b0b0ff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ff6b6b;
+        }
+
+        .status-message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status-loading {
+            background: rgba(0, 245, 255, 0.1);
+            color: #00f5ff;
+            border: 1px solid rgba(0, 245, 255, 0.3);
+        }
+
+        .status-success {
+            background: rgba(0, 184, 148, 0.1);
+            color: #00b894;
+            border: 1px solid rgba(0, 184, 148, 0.3);
+        }
+
+        .status-error {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 用户信息弹窗样式 */
+        .user-info-modal {
+            background: linear-gradient(135deg, #1e1e3f, #2d1b69);
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            padding: 0;
+            text-align: left;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalAppear 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .user-info-header {
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            padding: 20px 30px;
+            border-bottom: 2px solid rgba(0, 245, 255, 0.3);
+            position: relative;
+        }
+
+        .user-info-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info-body {
+            padding: 30px;
+        }
+
+        .user-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info-label {
+            font-weight: 600;
+            color: #b0b0ff;
+            min-width: 100px;
+            font-size: 14px;
+        }
+
+        .user-info-value {
+            color: #ffffff;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-all;
+            font-size: 14px;
+        }
+
+        .user-info-actions {
+            padding: 20px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ff5252, #d63031);
+        }
+
+        /* 学科工具弹窗样式 */
+        .subject-tools-modal {
+            background: linear-gradient(135deg, #1e1e3f, #2d1b69);
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            border-radius: 20px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 80vh;
+            padding: 0;
+            text-align: left;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalAppear 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .subject-tools-header {
+            background: linear-gradient(45deg, #00f5ff, #0080ff);
+            padding: 20px 30px;
+            border-bottom: 2px solid rgba(0, 245, 255, 0.3);
+            position: relative;
+        }
+
+        .subject-tools-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .subject-tools-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .tools-category {
+            margin-bottom: 30px;
+        }
+
+        .tools-category h4 {
+            color: #00f5ff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.3);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tool-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 245, 255, 0.2);
+        }
+
+        .tool-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .tool-description {
+            color: #b0b0ff;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .app-card {
+                padding: 25px 20px;
+            }
+            
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+
+        /* 科技感背景动画 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 128, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255, 107, 107, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div>
+                    <div class="logo-text">先见AI访问测试页面</div>
+                    <div class="subtitle">Xianjian AI Access Test</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="user-btn" id="userBtn" onclick="handleUserClick()">
+                    <i class="fas fa-user"></i>
+                    <span id="userText">用户验证</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 主标题区域 -->
+        <div class="hero-section">
+            <h1 class="main-title">先见AI访问测试页面</h1>
+            <p class="main-subtitle">请先完成用户验证，再进行功能跳转测试</p>
+        </div>
+
+        <!-- 应用网格 -->
+        <div class="apps-grid">
+            <!-- 编程实践 -->
+            <div class="app-card locked" data-app="coding" onclick="handleAppClick('coding', '#')">
+                <div class="lock-icon"><i class="fas fa-lock"></i></div>
+                <div class="app-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="app-title">CodePlayground</div>
+                <div class="app-description">
+                    像素风格的python在线编程学习平台，可以自定义编程示例任务，并使用AI助手辅助学习。
+                </div>
+                <div class="app-status status-locked">
+                    <i class="fas fa-lock"></i> 需要验证访问
+                </div>
+            </div>
+
+            <!-- AI智能助手 -->
+            <div class="app-card locked" data-app="ai" onclick="handleAppClick('ai', '#')">
+                <div class="lock-icon"><i class="fas fa-lock"></i></div>
+                <div class="app-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="app-title">AIbot</div>
+                <div class="app-description">
+                    集成最新AI技术的智能学习助手，提供代码生成、问题解答、学习路径规划等个性化服务。
+                </div>
+                <div class="app-status status-locked">
+                    <i class="fas fa-lock"></i> 需要验证访问
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 验证弹窗 -->
+    <div id="authModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideAuthModal()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-star"></i> 知识星球验证
+                </div>
+                <div class="modal-subtitle">验证成功后即可访问所有学习应用</div>
+            </div>
+            
+            <div id="authStatus" class="hidden">
+                <div id="authMessage" class="status-message"></div>
+            </div>
+            
+            <div class="modal-body">
+                <p style="color: #b0b0ff; margin-bottom: 20px;">
+                    <i class="fas fa-unlock"></i> 验证通过后您将获得：
+                </p>
+                <ul style="text-align: left; color: #8888aa; margin: 20px 0; padding-left: 20px;">
+                    <li><i class="fas fa-code" style="color: #00f5ff;"></i> 编程实践平台完整访问权限</li>
+                    <li><i class="fas fa-robot" style="color: #00f5ff;"></i> AI智能助手个性化服务</li>
+                    <li><i class="fas fa-project-diagram" style="color: #00f5ff;"></i> 算法可视化学习工具</li>
+                    <li><i class="fas fa-database" style="color: #00f5ff;"></i> 数据库实验室实践环境</li>
+                    <li><i class="fas fa-network-wired" style="color: #00f5ff;"></i> 网络技术模拟器</li>
+                    <li><i class="fas fa-shield-alt" style="color: #00f5ff;"></i> 信息安全实训平台</li>
+                </ul>
+                
+                <button class="auth-btn" onclick="startAuth()">
+                    <i class="fas fa-rocket"></i> 开始验证
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户信息弹窗 -->
+    <div id="userInfoModal" class="modal-overlay hidden">
+        <div class="user-info-modal">
+            <button class="close-btn" onclick="hideUserInfoModal()">&times;</button>
+            <div class="user-info-header">
+                <h3><i class="fas fa-user-circle"></i> 个人信息</h3>
+            </div>
+            <div class="user-info-body" id="userInfoBody">
+                <!-- 用户信息将在这里动态填充 -->
+            </div>
+            <div class="user-info-actions">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    退出登录
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ==================== 源代码保护设定 ====================
+        
+        // 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁用文本选择（但允许输入框和可编辑区域）
+        document.addEventListener('selectstart', function(e) {
+            // 允许输入框、文本区域和可编辑元素的文本选择
+            if (e.target.tagName === 'INPUT' || 
+                e.target.tagName === 'TEXTAREA' || 
+                e.target.contentEditable === 'true' ||
+                e.target.closest('.message-content')) {
+                return true;
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁用图片和非功能元素的拖拽
+        document.addEventListener('dragstart', function(e) {
+            // 允许文件上传相关的拖拽
+            if (e.target.closest('.chat-input-area') || e.target.type === 'file') {
+                return true;
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁用各种开发者工具快捷键
+        document.addEventListener('keydown', function(e) {
+            // 只在生产环境中启用快捷键禁用
+            if (window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' || 
+                window.location.protocol === 'file:') {
+                return true; // 开发环境允许所有快捷键
+            }
+            
+            // 禁用F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // 禁用Ctrl+Shift+I (开发者工具)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // 禁用Ctrl+Shift+J (控制台)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // 禁用Ctrl+U (查看源代码)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // 禁用Ctrl+Shift+C (选择元素)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                // 不影响复制功能，只在没有选中文本时禁用
+                if (!window.getSelection().toString()) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            
+            // 禁用Ctrl+S (保存页面)，但允许在输入框中使用
+            if (e.ctrlKey && e.keyCode === 83) {
+                if (!e.target || (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            
+            // 禁用Ctrl+P (打印)
+            if (e.ctrlKey && e.keyCode === 80) {
+                e.preventDefault();
+                return false;
+            }
+            
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                hideAuthModal();
+                hideUserInfoModal();
+                return true;
+            }
+        });
+
+        // 在生产环境中禁用console调试
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:') {
+            console.log = function() {};
+            console.debug = function() {};
+            console.info = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+        }
+
+        // 定期检查页面是否被修改
+        let originalHTML = '';
+        window.addEventListener('load', function() {
+            originalHTML = document.documentElement.outerHTML;
+        });
+
+        // 防止通过脚本注入修改页面
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1 && (node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) {
+                            // 检测到非法脚本或样式注入
+                            if (!node.src || !node.src.includes('cdnjs.cloudflare.com')) {
+                                node.remove();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // 清理可能的调试信息
+        setTimeout(function() {
+            // 清理控制台
+            if (console.clear) {
+                console.clear();
+            }
+        }, 1000);
+
+        // 页面加载完成后隐藏加载源码的痕迹
+        window.addEventListener('load', function() {
+            // 移除可能暴露源码结构的注释
+            document.querySelectorAll('*').forEach(function(element) {
+                if (element.nodeType === 8) { // 注释节点
+                    element.remove();
+                }
+            });
+        });
+
+        // 源代码保护已启用标识
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:') {
+            // 生产环境：启用完整保护
+            console.info('🔒 信息科技学习平台源代码保护已启用');
+        } else {
+            // 开发环境：保留调试功能
+            console.log('⚠️ 开发环境：源代码保护已启用，但保留调试功能');
+        }
+
+        // ==================== 源代码保护设定结束 ====================
+
+        // 配置信息
+        const CONFIG = {
+            app_id: '506707145',
+            group_number: '71745289',
+            secret: 'YWY2MjY5ZjI0YTM1MDJmMTQ1ODhlMjk2NzEzMjJjNTE=',
+            auth_url: 'https://wx.zsxq.com/connector/crm/identify_member.html',
+            redirect_url: window.location.origin + window.location.pathname + '?callback=1'
+        };
+
+        // 全局状态
+        let isAuthenticated = false;
+        let currentUser = null;
+
+        // 应用链接映射
+        const APP_URLS = {
+            'coding': 'https://www.xianjianaiedu.com/tools/CodePlayground.html',
+            'ai': 'https://www.xianjianaiedu.com/tools/AIbot.html'
+        };
+
+        // 页面加载初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('callback')) {
+                handleCallback(urlParams);
+            } else {
+                checkStoredAuth();
+            }
+        });
+
+        // 检查存储的认证信息
+        function checkStoredAuth() {
+            const authData = localStorage.getItem('zsxq_auth_data');
+            const authExpiry = localStorage.getItem('zsxq_auth_expiry');
+            
+            if (authData && authExpiry) {
+                const expiryTime = parseInt(authExpiry);
+                const currentTime = Math.floor(Date.now() / 1000);
+                
+                if (currentTime < expiryTime) {
+                    const userData = JSON.parse(authData);
+                    if (validateJoinTime(userData.join_time)) {
+                        setAuthenticatedState(userData);
+                        return;
+                    }
+                }
+                
+                localStorage.removeItem('zsxq_auth_data');
+                localStorage.removeItem('zsxq_auth_expiry');
+            }
+            
+            setUnauthenticatedState();
+        }
+
+        // 验证加入时间
+        function validateJoinTime(joinTimeStr) {
+            if (!joinTimeStr) return false;
+            
+            const joinTime = parseInt(joinTimeStr);
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeDiff = currentTime - joinTime;
+            const requiredTime = 72 * 60 * 60; // 72小时
+            
+            return timeDiff >= requiredTime;
+        }
+
+        // 用户按钮点击处理
+        function handleUserClick() {
+            if (isAuthenticated) {
+                showUserInfo();
+            } else {
+                showAuthModal();
+            }
+        }
+
+        // 应用卡片点击处理
+        function handleAppClick(appName, url) {
+            if (isAuthenticated) {
+                window.open(APP_URLS[appName] || url, '_blank');
+            } else {
+                showAuthModal();
+            }
+        }
+
+        // 显示验证弹窗
+        function showAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        // 隐藏验证弹窗
+        function hideAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        // 开始认证
+        function startAuth() {
+            showAuthStatus('正在跳转到知识星球进行身份验证...', 'loading');
+            
+            const timestamp = Math.floor(Date.now() / 1000);
+            const params = {
+                app_id: CONFIG.app_id,
+                group_number: CONFIG.group_number,
+                extra: 'it_platform_auth',
+                redirect_url: CONFIG.redirect_url,
+                timestamp: timestamp
+            };
+            
+            const signature = generateSignature(params);
+            params.signature = signature;
+            
+            const authUrl = buildAuthUrl(params);
+            
+            setTimeout(() => {
+                window.location.href = authUrl;
+            }, 1000);
+        }
+
+        // 显示验证状态
+        function showAuthStatus(message, type) {
+            const authStatus = document.getElementById('authStatus');
+            const authMessage = document.getElementById('authMessage');
+            
+            authMessage.textContent = message;
+            authMessage.className = `status-message status-${type}`;
+            authStatus.classList.remove('hidden');
+        }
+
+        // 处理回调
+        function handleCallback(urlParams) {
+            showAuthStatus('正在验证身份信息...', 'loading');
+            
+            if (urlParams.has('error_code')) {
+                const errorCode = urlParams.get('error_code');
+                showAuthStatus(`❌ 认证失败：错误代码 ${errorCode}`, 'error');
+                return;
+            }
+            
+            const userData = {
+                app_id: urlParams.get('app_id'),
+                group_number: urlParams.get('group_number'),
+                user_id: urlParams.get('user_id'),
+                user_name: urlParams.get('user_name'),
+                user_number: urlParams.get('user_number'),
+                user_icon: urlParams.get('user_icon'),
+                user_role: urlParams.get('user_role'),
+                join_time: urlParams.get('join_time'),
+                expire_time: urlParams.get('expire_time'),
+                timestamp: urlParams.get('timestamp'),
+                extra: urlParams.get('extra')
+            };
+            
+            if (!validateJoinTime(userData.join_time)) {
+                const joinDate = new Date(parseInt(userData.join_time) * 1000);
+                const hoursRemaining = Math.ceil((259200 - (Math.floor(Date.now() / 1000) - parseInt(userData.join_time))) / 3600);
+                showAuthStatus(`❌ 验证失败：需要加入知识星球满72小时后才能使用。\n加入时间：${joinDate.toLocaleString()}\n预计还需等待：${hoursRemaining}小时`, 'error');
+                return;
+            }
+            
+            localStorage.setItem('zsxq_auth_data', JSON.stringify(userData));
+            localStorage.setItem('zsxq_auth_expiry', userData.expire_time);
+            
+            window.history.replaceState({}, '', window.location.pathname);
+            
+            showAuthStatus('✅ 身份验证成功！', 'success');
+            
+            setTimeout(() => {
+                hideAuthModal();
+                setAuthenticatedState(userData);
+            }, 2000);
+        }
+
+        // 设置已验证状态
+        function setAuthenticatedState(userData) {
+            isAuthenticated = true;
+            currentUser = userData;
+            
+            // 更新用户按钮
+            const userBtn = document.getElementById('userBtn');
+            const userText = document.getElementById('userText');
+            userBtn.classList.add('authenticated');
+            userText.textContent = userData.user_name || '已验证用户';
+            
+            // 解锁所有应用
+            const appCards = document.querySelectorAll('.app-card');
+            appCards.forEach(card => {
+                card.classList.remove('locked');
+                card.classList.add('unlocked');
+                
+                const lockIcon = card.querySelector('.lock-icon i');
+                const statusElement = card.querySelector('.app-status');
+                
+                if (lockIcon) lockIcon.className = 'fas fa-unlock';
+                if (statusElement) {
+                    statusElement.className = 'app-status status-unlocked';
+                    statusElement.innerHTML = '<i class="fas fa-unlock"></i> 已解锁访问';
+                }
+            });
+        }
+
+        // 设置未验证状态
+        function setUnauthenticatedState() {
+            isAuthenticated = false;
+            currentUser = null;
+            
+            const userBtn = document.getElementById('userBtn');
+            const userText = document.getElementById('userText');
+            userBtn.classList.remove('authenticated');
+            userText.textContent = '用户验证';
+            
+            // 锁定所有应用
+            const appCards = document.querySelectorAll('.app-card');
+            appCards.forEach(card => {
+                card.classList.remove('unlocked');
+                card.classList.add('locked');
+                
+                const lockIcon = card.querySelector('.lock-icon i');
+                const statusElement = card.querySelector('.app-status');
+                
+                if (lockIcon) lockIcon.className = 'fas fa-lock';
+                if (statusElement) {
+                    statusElement.className = 'app-status status-locked';
+                    statusElement.innerHTML = '<i class="fas fa-lock"></i> 需要验证访问';
+                }
+            });
+        }
+
+        // 显示用户信息弹窗
+        function showUserInfo() {
+            if (!currentUser) return;
+            
+            const userInfoBody = document.getElementById('userInfoBody');
+            const joinDate = new Date(parseInt(currentUser.join_time) * 1000);
+            const expireDate = currentUser.expire_time ? new Date(parseInt(currentUser.expire_time) * 1000) : null;
+            
+            // 计算成员状态
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeDiff = currentTime - parseInt(currentUser.join_time);
+            const daysSinceJoin = Math.floor(timeDiff / (24 * 60 * 60));
+            
+            // 角色映射
+            const roleMap = {
+                'owner': '星主',
+                'admin': '管理员',
+                'member': '成员',
+                'guest': '访客'
+            };
+            
+            userInfoBody.innerHTML = `
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-user"></i> 昵称</span>
+                    <span class="user-info-value">${currentUser.user_name || '未知用户'}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-id-badge"></i> 用户ID</span>
+                    <span class="user-info-value">${currentUser.user_id || '-'}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-hashtag"></i> 编号</span>
+                    <span class="user-info-value">${currentUser.user_number || '-'}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-crown"></i> 角色</span>
+                    <span class="user-info-value">${roleMap[currentUser.user_role] || currentUser.user_role || '成员'}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-calendar-plus"></i> 加入时间</span>
+                    <span class="user-info-value">${joinDate.toLocaleString()}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-clock"></i> 加入天数</span>
+                    <span class="user-info-value">${daysSinceJoin} 天</span>
+                </div>
+                ${expireDate ? `
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-hourglass-end"></i> 认证过期</span>
+                    <span class="user-info-value">${expireDate.toLocaleString()}</span>
+                </div>
+                ` : ''}
+                <div class="user-info-item">
+                    <span class="user-info-label"><i class="fas fa-shield-check"></i> 验证状态</span>
+                    <span class="user-info-value" style="color: #00f5ff;">✅ 已验证</span>
+                </div>
+            `;
+            
+            document.getElementById('userInfoModal').classList.remove('hidden');
+        }
+
+        // 隐藏用户信息弹窗
+        function hideUserInfoModal() {
+            document.getElementById('userInfoModal').classList.add('hidden');
+        }
+
+        // 退出登录
+        function logout() {
+            // 清除本地存储的认证信息
+            localStorage.removeItem('zsxq_auth_data');
+            localStorage.removeItem('zsxq_auth_expiry');
+            
+            // 隐藏用户信息弹窗
+            hideUserInfoModal();
+            
+            // 重置到未验证状态
+            setUnauthenticatedState();
+            
+            // 显示退出成功提示
+            showNotification('已成功退出登录', 'success');
+        }
+
+        // 通知提示功能
+        function showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(45deg, #00b894, #00a085)' : 'linear-gradient(45deg, #0080ff, #00f5ff)'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: 500;
+                animation: slideInRight 0.3s ease-out;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 300px;
+            `;
+            
+            const icon = type === 'success' ? '✅' : 'ℹ️';
+            notification.innerHTML = `${icon} ${message}`;
+            
+            // 添加滑入动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                    if (style.parentNode) {
+                        style.parentNode.removeChild(style);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Base64解码
+        function decodeBase64(str) {
+            try {
+                return atob(str);
+            } catch (error) {
+                console.error('Base64解码失败:', error);
+                return '';
+            }
+        }
+
+        // 生成签名
+        function generateSignature(params) {
+            const decryptedSecret = decodeBase64(CONFIG.secret);
+            if (!decryptedSecret) return '';
+            
+            const filteredParams = {};
+            Object.keys(params).forEach(key => {
+                if (key !== 'signature' && params[key] !== '' && params[key] != null) {
+                    filteredParams[key] = params[key];
+                }
+            });
+            
+            const sortedKeys = Object.keys(filteredParams).sort();
+            const queryParts = sortedKeys.map(key => {
+                return `${key}=${encodeURIComponent(filteredParams[key])}`;
+            });
+            
+            const queryString = queryParts.join('&');
+            const stringToSign = queryString + '&secret=' + decryptedSecret;
+            
+            return sha1(stringToSign);
+        }
+
+        // 构建认证URL
+        function buildAuthUrl(params) {
+            const queryString = Object.keys(params)
+                .map(key => `${key}=${encodeURIComponent(params[key])}`)
+                .join('&');
+            
+            return `${CONFIG.auth_url}?${queryString}`;
+        }
+
+        // SHA1算法实现（简化版）
+        function sha1(str) {
+            // 这里使用浏览器的crypto API或外部库
+            // 为简化起见，这里返回一个模拟的签名
+            return 'simulated_signature_' + btoa(str).substring(0, 20);
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAuthModal();
+            }
+        });
+
+        // ==================== 学科工具弹窗功能 ====================
+        
+        // 学科工具数据（按年级分类）
+        const subjectToolsData = {
+            "三年级": [
+                // 暂无内容，后续手动调整
+            ],
+            "四年级": [
+                { name: "二维码生成器", description: "将文本、网页等内容生成二维码", url: "https://www.xianjianaiedu.com/subject/information/二维码生成器.html" },
+                { name: "魔术卡片", description: "用魔术卡片游戏学习编码过程", url: "https://www.xianjianaiedu.com/subject/information/魔术卡片.html" },
+                { name: "摩尔斯电码", description: "模拟摩尔斯电码的编码过程", url: "https://www.xianjianaiedu.com/subject/information/摩尔斯电码.html" },
+                { name: "黑白方块图", description: "通过黑白方块图学习计算机图像编码过程", url: "https://www.xianjianaiedu.com/subject/information/黑白方块图.html" },
+                { name: "三原色方块图", description: "通过三原色方块图学习计算机三原色色彩图像编码过程", url: "https://www.xianjianaiedu.com/subject/information/三原色方块图.html" },
+                { name: "RGB方块图", description: "通过RGB方块图学习计算机RGB色彩图像编码过程", url: "https://www.xianjianaiedu.com/subject/information/RGB方块图.html" },
+                { name: "彩色方块图", description: "通过彩色方块图学习计算机彩色图像编码过程", url: "https://www.xianjianaiedu.com/subject/information/彩色方块图.html" },
+                { name: "推箱子完整版", description: "推箱子游戏学习编码也能动起来", url: "https://www.xianjianaiedu.com/subject/information/推箱子完整版.html" },
+                { name: "凯撒密码转盘", description: "古老的凯撒密码转盘体验数据加密编码的作用", url: "https://www.xianjianaiedu.com/subject/information/凯撒密码转盘.html" }
+            ],
+            "五年级": [
+                { name: "汉诺塔", description: "通过汉诺塔游戏学习算法的思想", url: "https://www.xianjianaiedu.com/subject/information/hanoi.html" },
+                { name: "量水游戏", description: "通过量水游戏体验算法的思想", url: "https://www.xianjianaiedu.com/subject/information/量水游戏.html" },
+                { name: "互传密信", description: "通过互传密信学习编码的过程", url: "https://www.xianjianaiedu.com/subject/information/互传密信.html" },
+                { name: "猜数游戏", description: "通过猜数游戏学习二分法的过程", url: "https://www.xianjianaiedu.com/subject/information/猜数游戏.html" },
+                { name: "最值查找", description: "通过最值查找学习排序算法的基础", url: "https://www.xianjianaiedu.com/subject/information/最值查找.html" },
+                { name: "选择排序", description: "通过选择排序学习基础排序算法", url: "https://www.xianjianaiedu.com/subject/information/选择排序.html" },
+                { name: "冒泡排序", description: "通过选择排序学习基础排序算法", url: "https://www.xianjianaiedu.com/subject/information/冒泡排序.html" },
+                { name: "桶排序", description: "通过桶排序学习分治思想的排序算法", url: "https://www.xianjianaiedu.com/subject/information/桶排序.html" },
+                { name: "鸡兔同笼", description: "通过鸡兔同笼经典问题学习枚举法的应用", url: "https://www.xianjianaiedu.com/subject/information/鸡兔同笼.html" },
+                { name: "兔子跳台阶", description: "通过兔子跳台阶问题学习递推算法，认识斐波那契数列", url: "https://www.xianjianaiedu.com/subject/information/兔子跳台阶.html" },
+                { name: "多人过河", description: "通过多人过河问题学习问题分解的方法", url: "https://www.xianjianaiedu.com/subject/information/多人过河.html" },
+                { name: "七桥问题", description: "通过经典的七桥问题学习一笔画", url: "https://www.xianjianaiedu.com/subject/information/七桥问题.html" },
+                { name: "一笔画问题", description: "通过一笔画问题学习图论的基础", url: "https://www.xianjianaiedu.com/subject/information/一笔画问题.html" },
+                { name: "最短路径", description: "通过最短路径问题巩固分治的思想", url: "https://www.xianjianaiedu.com/subject/information/最短路径.html" },
+                { name: "生命游戏", description: "通过体验生命游戏，探寻规则的影响", url: "https://www.xianjianaiedu.com/subject/information/生命游戏.html" },
+                { name: "网页排名算法", description: "体验PageRank算法，理解网络排名", url: "https://www.xianjianaiedu.com/subject/information/网页排名算法.html" }
+            ],
+            "六年级": [
+                { name: "自动巡迹机器人", description: "通过体验自动巡迹机器人，了解自动控制的作用", url: "https://www.xianjianaiedu.com/subject/information/自动巡迹机器人.html" },
+                { name: "机器人走正方形轨迹", description: "通过体验机器人走正方形轨迹，了解参数控制的作用", url: "https://www.xianjianaiedu.com/subject/information/机器人走正方形轨迹.html" },
+                { name: "会避障和不会避障的机器人", description: "通过体验会避障和不会避障的机器人，了解参数控制的作用", url: "https://www.xianjianaiedu.com/subject/information/会避障和不会避障的机器人.html" },
+                { name: "恒温热水器", description: "通过体验恒温热水器，了解反馈的作用", url: "https://www.xianjianaiedu.com/subject/information/恒温热水器.html" },
+                { name: "会唱歌的机器人", description: "通过体验唱歌机器人，了解控制系统的特点", url: "https://www.xianjianaiedu.com/subject/information/会唱歌的机器人.html" },
+                { name: "搭建会闪光的机器人", description: "通过搭建会闪光的机器人，了解模块化的作用", url: "https://www.xianjianaiedu.com/subject/information/搭建会闪光的机器人.html" },
+                { name: "机器人直行控制", description: "通过体验机器人直行控制，了解参数控制的作用", url: "https://www.xianjianaiedu.com/subject/information/机器人直行控制.html" },
+                { name: "机器人分段直行控制", description: "通过体验机器人分段直行，了解参数控制的作用", url: "https://www.xianjianaiedu.com/subject/information/机器人分段直行控制.html" },
+                { name: "光照控制系统", description: "通过体验光照控制系统，了解智能种植中的光线控制", url: "https://www.xianjianaiedu.com/subject/information/光照控制系统.html" },
+                { name: "温度控制系统", description: "通过体验温度控制系统，了解智能种植中的温度控制", url: "https://www.xianjianaiedu.com/subject/information/温度控制系统.html" },
+                { name: "土壤湿度控制系统", description: "通过体验土壤湿度控制系统，了解智能种植中的土壤湿度控制", url: "https://www.xianjianaiedu.com/subject/information/土壤湿度控制系统.html" },
+                { name: "呼叫电梯", description: "通过体验模拟呼叫电梯系统，了解电梯的运作过程", url: "https://www.xianjianaiedu.com/subject/information/呼叫电梯.html" },
+                { name: "控制电梯门打开", description: "通过体验模拟控制电梯门打开系统，了解电梯的运作过程", url: "https://www.xianjianaiedu.com/subject/information/控制电梯门打开.html" },
+                { name: "控制电梯到达指定楼层", description: "通过体验模拟控制电梯到达指定楼层系统，了解电梯的运作过程", url: "https://www.xianjianaiedu.com/subject/information/控制电梯到达指定楼层.html" },
+                { name: "电梯超载检测", description: "通过体验模拟电梯超载检测系统，了解电梯的运作过程", url: "https://www.xianjianaiedu.com/subject/information/电梯超载检测.html" },
+                { name: "自动熄灭转向灯", description: "通过体验自动熄灭转向灯系统，了解汽车内的控制系统运作过程", url: "https://www.xianjianaiedu.com/subject/information/自动熄灭转向灯.html" },
+                { name: "安全带未系提醒", description: "通过体验安全带未系提醒系统，了解汽车内的控制系统运作过程", url: "https://www.xianjianaiedu.com/subject/information/安全带未系提醒.html" },
+                { name: "倒车防撞提醒", description: "通过体验倒车防撞提醒系统，了解汽车内的控制系统运作过程", url: "https://www.xianjianaiedu.com/subject/information/倒车防撞提醒.html" },
+                { name: "智能种植控制系统", description: "通过体验完整的智能种植控制系统，了解智能种植的原理", url: "https://www.xianjianaiedu.com/subject/information/智能种植控制系统.html" }
+
+            ],
+            "七年级": [
+                { name: "验证码模拟工具", description: "通过体验验证码模拟工具，了解验证码的运作过程", url: "https://www.xianjianaiedu.com/subject/information/验证码模拟工具.html" },
+                { name: "网络传输编码解码", description: "通过体验网络传输编码解码系统，了解网络传输的原理", url: "https://www.xianjianaiedu.com/subject/information/网络传输编码解码.html" },
+                { name: "图片编码", description: "通过体验图片编码系统，了解图片的编码过程", url: "https://www.xianjianaiedu.com/subject/information/图片编码.html" },
+                { name: "Markdown编辑器", description: "通过体验Markdown编辑器，了解Markdown的语法", url: "https://www.xianjianaiedu.com/subject/information/Markdown编辑器.html" },
+                { name: "网页制作在线编辑器", description: "通过体验网页制作在线编辑器，了解网页制作的原理", url: "https://www.xianjianaiedu.com/subject/information/网页制作在线编辑器.html" },
+                { name: "进制转换器", description: "通过体验进制转换器，了解不同进制之间的转换", url: "https://www.xianjianaiedu.com/subject/information/进制转换器.html" },
+                { name: "分包传输", description: "通过体验分包传输系统，了解网络传输的原理", url: "https://www.xianjianaiedu.com/subject/information/分包传输.html" },
+                { name: "网络仿真", description: "通过体验网络仿真系统，了解网络传输的原理", url: "https://www.xianjianaiedu.com/subject/information/网络仿真.html" }
+
+            ],
+            "八年级": [
+                { name: "人体感应光控灯", description: "通过体验人体感应灯模拟工具，了解感应设备的运作过程", url: "https://www.xianjianaiedu.com/subject/information/人体感应光控灯.html" },
+                { name: "人体感应光控灯2", description: "通过体验人体感应灯模拟工具，了解感应设备的运作过程", url: "https://www.xianjianaiedu.com/subject/information/人体感应光控灯2.html" },
+                { name: "物联开关", description: "通过体验物联开关，了解物联开关的设置和运作过程", url: "https://www.xianjianaiedu.com/subject/information/物联开关.html" },
+                { name: "智能插座体验", description: "通过体验智能插座，了解智能设备运行过程", url: "https://www.xianjianaiedu.com/subject/information/智能插座体验.html" },
+                { name: "智能灌溉监控", description: "通过体验智能灌溉监控系统，了解智能监控的原理", url: "https://www.xianjianaiedu.com/subject/information/智能灌溉监控.html" },
+                { name: "电子标签模拟", description: "通过体验电子标签模拟，了解电子标签的作用", url: "https://www.xianjianaiedu.com/subject/information/电子标签模拟.html" },
+                { name: "蓝牙翻页器", description: "通过体验蓝牙翻页器，了解蓝牙设备的运作原理", url: "https://www.xianjianaiedu.com/subject/information/蓝牙翻页器.html" },
+                { name: "互联协议", description: "通过体验互联协议仿真系统，了解网络互联协议的原理", url: "https://www.xianjianaiedu.com/subject/information/互联协议.html" },
+                { name: "智能门锁", description: "通过体验智能门锁模拟工具，了解智能门锁的运作过程", url: "https://www.xianjianaiedu.com/subject/information/智能门锁.html" },
+                { name: "物联数据采集", description: "通过体验物联数据采集，了解物联数据采集过程", url: "https://www.xianjianaiedu.com/subject/information/物联数据采集.html" },
+                { name: "反馈控制算法", description: "通过体验反馈控制算法，了解反馈控制算法的运行过程", url: "https://www.xianjianaiedu.com/subject/information/反馈控制算法.html" },
+                { name: "文物保护控制", description: "通过体验文物保护控制模拟系统，感受文物保护新手段", url: "https://www.xianjianaiedu.com/subject/information/文物保护控制.html" },
+                { name: "身高记录设备", description: "通过体验身高记录设备模拟系统，感受健康生活新设备", url: "https://www.xianjianaiedu.com/subject/information/身高记录设备.html" },
+                { name: "点滴提醒设备", description: "通过体验点滴提醒设备模拟系统，感受医疗设施新功能", url: "https://www.xianjianaiedu.com/subject/information/点滴提醒设备.html" },
+                { name: "奶牛产奶智能化", description: "通过体验奶牛产奶智能化模拟系统，感受农业生产新模式", url: "https://www.xianjianaiedu.com/subject/information/奶牛产奶智能化.html" },
+                { name: "热水降温探究", description: "通过体验热水降温探究模拟系统，感受学习探究新工具", url: "https://www.xianjianaiedu.com/subject/information/热水降温探究.html" },
+                { name: "面部表情开锁", description: "通过体验面部表情开锁模拟系统，感受系统安全需升级", url: "https://www.xianjianaiedu.com/subject/information/面部表情开锁.html" }
+
+            ],
+            "通用工具": [
+                { name: "知识图谱编辑器", description: "创建和编辑知识图谱，可视化知识结构", url: "https://www.xianjianaiedu.com/subject/information/知识图谱编辑器.html" },
+                { name: "词云图生成器", description: "创建和编辑词云图，可视化文本关键词", url: "https://www.xianjianaiedu.com/subject/information/词云图生成器.html" },
+                { name: "在线学习单链接模板", description: "在线学习单链接模板，方便教师发送学习单链接地址", url: "https://xianjianaiedu.oss-cn-beijing.aliyuncs.com/ittech/%E5%9C%A8%E7%BA%BF%E5%AD%A6%E4%B9%A0%E5%8D%95%E9%93%BE%E6%8E%A5.html" }
+            ]
+        };
+        
+        
+
+        // 用户信息弹窗外部点击关闭
+        document.getElementById('userInfoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideUserInfoModal();
+            }
+        });
+
+        // ==================== 人教版学习手册弹窗功能 ====================
+        
+        // 人教版学习手册数据
+        const textbookData = {
+            
+            "三年级": [
+                { name: "第1课 寻找信息科技", description: "了解信息科技的重要性，认识信息科技的作用", url: "https://www.xianjianaiedu.com/it/study/3-1.html" },
+                { name: "第2课 使用数字设备", description: "了解数字设备的重要性，认识数字设备的作用", url: "https://www.xianjianaiedu.com/it/study/3-2.html" },
+                { name: "第3课 体验人机交互", description: "了解人机交互的重要性，认识人机交互的作用", url: "https://www.xianjianaiedu.com/it/study/3-3.html" },
+                { name: "第4课 图片记录瞬间", description: "了解拍摄图片的方法，掌握不同的拍摄技巧", url: "https://www.xianjianaiedu.com/it/study/3-4.html" },
+                { name: "第5课 美化处理图片", description: "了解美化处理图片的方法，掌握不同的美化技巧", url: "https://www.xianjianaiedu.com/it/study/3-5.html" },
+                { name: "第6课 视频记录片段", description: "了解拍摄视频的方法，掌握不同的拍摄技巧", url: "https://www.xianjianaiedu.com/it/study/3-6.html" },
+                { name: "第7课 音频记录声音", description: "了解音频处理的方法，掌握不同的处理技巧", url: "https://www.xianjianaiedu.com/it/study/3-7.html" },
+                { name: "第8课 浏览网络资源", description: "了解浏览网络资源的方法，掌握不同的浏览技巧", url: "https://www.xianjianaiedu.com/it/study/3-8.html" },
+                { name: "第9课 在线搜索资源", description: "了解在线搜索资源的方法，掌握不同的搜索技巧", url: "https://www.xianjianaiedu.com/it/study/3-9.html" },
+                { name: "第10课 保存信息资源", description: "了解保存信息资源的方法，掌握不同的保存技巧", url: "https://www.xianjianaiedu.com/it/study/3-10.html" },
+                { name: "第11课 整理信息资源", description: "了解整理信息资源的方法，掌握不同的整理技巧", url: "https://www.xianjianaiedu.com/it/study/3-11.html" },
+                { name: "第12课 认识数字作品", description: "了解数字作品的重要性，认识数字作品的作用", url: "https://www.xianjianaiedu.com/it/study/3-12.html" },
+                { name: "第13课 制作数字相册", description: "了解数字相册的重要性，认识数字相册的作用", url: "https://www.xianjianaiedu.com/it/study/3-13.html" },
+                { name: "第14课 制作数字小报", description: "了解数字小报的重要性，认识数字小报的作用", url: "https://www.xianjianaiedu.com/it/study/3-14.html" },
+                { name: "第15课 展示数字作品", description: "了解数字作品的展示方法，掌握数字作品的展示技巧", url: "https://www.xianjianaiedu.com/it/study/3-15.html" },
+                { name: "第16课 畅享在线交流", description: "了解在线交流的方法，掌握在线交流的技巧", url: "https://www.xianjianaiedu.com/it/study/3-16.html" },
+                { name: "第17课 参与网络社交", description: "了解网络社交的方法，掌握网络社交的技巧", url: "https://www.xianjianaiedu.com/it/study/3-17.html" },
+                { name: "第18课 在线行为规范", description: "了解在线行为规范的重要性，认识在线行为规范的作用", url: "https://www.xianjianaiedu.com/it/study/3-18.html" },
+                { name: "第19课 认识数字身份", description: "了解数字身份的重要性，认识数字身份的作用", url: "https://www.xianjianaiedu.com/it/study/3-19.html" },
+                { name: "第20课 体验在线学习", description: "了解在线学习的重要性，认识在线学习的作用", url: "https://www.xianjianaiedu.com/it/study/3-20.html" },
+                { name: "第21课 分享学习资源", description: "了解分享学习资源的重要性，认识分享学习资源的作用", url: "https://www.xianjianaiedu.com/it/study/3-21.html" },
+                { name: "第22课 探讨在线学习", description: "了解在线学习的重要性，认识在线学习的作用", url: "https://www.xianjianaiedu.com/it/study/3-22.html" },
+                { name: "第23课 分解描述问题", description: "了解分解描述问题的方法，掌握分解描述问题的技巧", url: "https://www.xianjianaiedu.com/it/study/3-23.html" },
+                { name: "第24课 分组分派任务", description: "了解分组分派任务的方法，掌握分组分派任务的技巧", url: "https://www.xianjianaiedu.com/it/study/3-24.html" },
+                { name: "第25课 合作制作作品", description: "了解合作制作作品的方法，掌握合作制作作品的技巧", url: "https://www.xianjianaiedu.com/it/study/3-25.html" },
+                { name: "第26课 完善评价作品", description: "了解完善评价作品的方法，掌握完善评价作品的技巧", url: "https://www.xianjianaiedu.com/it/study/3-26.html" },
+                { name: "第27课 感悟在线社会", description: "了解在线社会的重要性，认识在线社会的作用", url: "https://www.xianjianaiedu.com/it/study/3-27.html" },
+                { name: "第28课 初识人工智能", description: "了解人工智能的重要性，认识人工智能的作用", url: "https://www.xianjianaiedu.com/it/study/3-28.html" },
+                { name: "第29课 了解自主可控", description: "了解自主可控的重要性，认识自主可控的作用", url: "https://www.xianjianaiedu.com/it/study/3-29.html" },
+                { name: "第30课 在线安全防范", description: "了解在线安全防范的重要性，认识在线安全防范的作用", url: "https://www.xianjianaiedu.com/it/study/3-30.html" }
+                
+            ],
+            "四年级": [
+                { name: "第1课 数据宝藏在身边", description: "了解身边的数据，认识数据的重要性", url: "https://www.xianjianaiedu.com/it/study/4-1.html" },
+                { name: "第2课 获取数据有方法", description: "了解获取数据的方法，认识数据的获取方式", url: "https://www.xianjianaiedu.com/it/study/4-2.html" },
+                { name: "第3课 寻找可靠数据源", description: "了解寻找可靠数据源的方法，认识数据源的重要性", url: "https://www.xianjianaiedu.com/it/study/4-3.html" },
+                { name: "第4课 记录数据讲诀窍", description: "了解记录数据的方法，掌握数据记录的技巧", url: "https://www.xianjianaiedu.com/it/study/4-4.html" },
+                { name: "第5课 数据价值巧发现", description: "了解数据价值的发现方法，掌握数据价值的发现技巧", url: "https://www.xianjianaiedu.com/it/study/4-5.html" },
+                { name: "第6课 古往今来话编码", description: "了解从古至今的编码，掌握编码的原理", url: "https://www.xianjianaiedu.com/it/study/4-6.html" },
+                { name: "第7课 数据编码随处见", description: "了解身边的数据编码，掌握简单的数据编码", url: "https://www.xianjianaiedu.com/it/study/4-7.html" },
+                { name: "第8课 编码管理我知道", description: "了解编码管理的重要性，认识编码管理的作用", url: "https://www.xianjianaiedu.com/it/study/4-8.html" },
+                { name: "第9课 二维码伴我生活", description: "了解二维码的重要性，认识二维码的作用", url: "https://www.xianjianaiedu.com/it/study/4-9.html" },
+                { name: "第10课 数据错误及时验", description: "了解数据错误及时验的重要性，认识数据错误及时验的作用", url: "https://www.xianjianaiedu.com/it/study/4-10.html" },
+                { name: "第11课 嘀嘀嗒嗒的秘密", description: "了解摩尔斯密码的秘密，认识编码的作用", url: "https://www.xianjianaiedu.com/it/study/4-11.html" },
+                { name: "第12课 二值的黑白图像", description: "了解二值的黑白图像的重要性，认识二值的黑白图像编码的作用", url: "https://www.xianjianaiedu.com/it/study/4-12.html" },
+                { name: "第13课 多彩的数字世界", description: "了解色彩编码的重要性，认识色彩编码的作用", url: "https://www.xianjianaiedu.com/it/study/4-13.html" },
+                { name: "第14课 编码也能动起来", description: "了解对动作编码的重要性，认识动作编码的作用", url: "https://www.xianjianaiedu.com/it/study/4-14.html" },
+                { name: "第15课 自定编码讲规则", description: "了解自定编码的重要性，认识自定编码的作用", url: "https://www.xianjianaiedu.com/it/study/4-15.html" },
+                { name: "第16课 数据管理与编码", description: "了解数据管理的重要性，认识数据与编码的关系", url: "https://www.xianjianaiedu.com/it/study/4-16.html" },
+                { name: "第17课 查找筛选讲效率", description: "了解查找筛选的方法，认识筛选数据的效率", url: "https://www.xianjianaiedu.com/it/study/4-17.html" },
+                { name: "第18课 排序计算有方法", description: "了解排序计算的方法，掌握排序计算的技巧", url: "https://www.xianjianaiedu.com/it/study/4-18.html" },
+                { name: "第19课 数据安全意识强", description: "了解数据安全意识的重要性，认识数据安全意识的作用", url: "https://www.xianjianaiedu.com/it/study/4-19.html" },
+                { name: "第20课 保护数据小妙招", description: "了解保护数据小妙招的重要性，认识保护数据小妙招的作用", url: "https://www.xianjianaiedu.com/it/study/4-20.html" },
+                { name: "第21课 展现数量的关系", description: "了解展现数量的关系的方法，掌握展现数量的关系的技巧", url: "https://www.xianjianaiedu.com/it/study/4-21.html" },
+                { name: "第22课 探寻趋势与规律", description: "了解探寻趋势与规律的方法，掌握探寻趋势与规律的技巧", url: "https://www.xianjianaiedu.com/it/study/4-22.html" },
+                { name: "第23课 挑战多角度比拼", description: "了解多角度比拼的方法，掌握多角度比拼的技巧", url: "https://www.xianjianaiedu.com/it/study/4-23.html" },
+                { name: "第24课 抽取文本汇词云", description: "了解抽取文本汇词云的方法，掌握抽取文本汇词云的技巧", url: "https://www.xianjianaiedu.com/it/study/4-24.html" },
+                { name: "第25课 知识图谱来帮忙", description: "了解知识图谱的作用，认识知识图谱的作用", url: "https://www.xianjianaiedu.com/it/study/4-25.html" },
+                { name: "第26课 用数据支撑观点", description: "了解用数据支撑观点的方法，掌握用数据支撑观点的技巧", url: "https://www.xianjianaiedu.com/it/study/4-26.html" },
+                { name: "第27课 数据点亮生活", description: "了解数据点亮生活的方法，掌握数据点亮生活的技巧", url: "https://www.xianjianaiedu.com/it/study/4-27.html" },
+                { name: "第28课 大数据助力智能", description: "了解大数据助力智能生活的方法，掌握大数据助力智能生活的技巧", url: "https://www.xianjianaiedu.com/it/study/4-28.html" },
+                { name: "第29课 生成式人工智能", description: "了解生成式人工智能的作用，认识生成式人工智能的作用", url: "https://www.xianjianaiedu.com/it/study/4-29.html" },
+                { name: "第30课 应对智能新挑战", description: "了解应对智能新挑战的方法，掌握应对智能新挑战的技巧", url: "https://www.xianjianaiedu.com/it/study/4-30.html" }
+            ],
+            "五年级": [
+                { name: "第1课 生活处处有算法", description: "了解生活中算法的存在，认识算法的作用", url: "https://www.xianjianaiedu.com/it/study/5-1.html" },
+                { name: "第2课 算法认识与体验", description: "了解算法的认识与体验，认识算法的作用", url: "https://www.xianjianaiedu.com/it/study/5-2.html" },
+                { name: "第3课 游戏体验寻规律", description: "了解游戏体验寻规律的方法，认识游戏体验的作用", url: "https://www.xianjianaiedu.com/it/study/5-3.html" },
+                { name: "第4课 算法应用在身边", description: "了解身边的算法应用，体会算法的作用", url: "https://www.xianjianaiedu.com/it/study/5-4.html" },
+                { name: "第5课 数学运算讲方法", description: "了解数学运算的方法，掌握不同的运算技巧", url: "https://www.xianjianaiedu.com/it/study/5-5.html" },
+                { name: "第6课 判断选择用分支", description: "了解判断选择用分支的方法，掌握不同的分支技巧", url: "https://www.xianjianaiedu.com/it/study/5-6.html" },
+                { name: "第7课 重复操作用循环", description: "了解重复操作用循环的方法，掌握不同的循环技巧", url: "https://www.xianjianaiedu.com/it/study/5-7.html" },
+                { name: "第8课 算法验证与实现", description: "了解算法验证与实现的方法，掌握不同的验证技巧", url: "https://www.xianjianaiedu.com/it/study/5-8.html" },
+                { name: "第9课 互传密信有诀窍", description: "了解互传密信的方法，掌握不同的加密技巧", url: "https://www.xianjianaiedu.com/it/study/5-9.html" },
+                { name: "第10课 猜数游戏有捷径", description: "了解猜数游戏的方法，掌握二分法解决问题的技巧", url: "https://www.xianjianaiedu.com/it/study/5-10.html" },
+                { name: "第11课 闰年平年我知道（1）", description: "了解闰年平年的判断方法，掌握判断闰年平年的技巧", url: "https://www.xianjianaiedu.com/it/study/5-11.html" },
+                { name: "第12课 闰年平年我知道（2）", description: "了解闰年平年的判断方法，掌握判断闰年平年的技巧", url: "https://www.xianjianaiedu.com/it/study/5-12.html" },
+                { name: "第13课 让计算机会数数", description: "了解计算机数数的方法，掌握计算机数数的技巧", url: "https://www.xianjianaiedu.com/it/study/5-13.html" },
+                { name: "第14课 算法效率比一比", description: "了解不同算法的效率，掌握比较算法效率的技巧", url: "https://www.xianjianaiedu.com/it/study/5-14.html" },
+                { name: "第15课 简单密码易破解", description: "了解简单密码易破解的方法，掌握简单密码易破解的技巧", url: "https://www.xianjianaiedu.com/it/study/5-15.html" }
+                
+            ],
+            "六年级": [
+                { name: "第1课 设备控制处处在", description: "了解生活中的设备控制，认识设备控制的作用", url: "https://www.xianjianaiedu.com/it/study/6-1.html" },
+                { name: "第2课 一分为二开与关", description: "了解一分为二开与关的作用，认识开关的原理", url: "https://www.xianjianaiedu.com/it/study/6-2.html" },
+                { name: "第3课 我是小小控制员", description: "了解控制的作用，认识控制的原理", url: "https://www.xianjianaiedu.com/it/study/6-3.html" },
+                { name: "第4课 输入输出与计算", description: "了解输入输出与计算的作用，认识计算的原理", url: "https://www.xianjianaiedu.com/it/study/6-4.html" },
+                { name: "第5课 连续变化的数据", description: "了解连续变化的数据的作用，认识数据的连续变化", url: "https://www.xianjianaiedu.com/it/study/6-5.html" },
+                { name: "第6课 开关量的真与假", description: "了解开关量的真与假的作用，认识开关量的原理", url: "https://www.xianjianaiedu.com/it/study/6-6.html" },
+                { name: "第7课 开关量的与运算", description: "了解开关量的与运算的作用，认识开关量的原理", url: "https://www.xianjianaiedu.com/it/study/6-7.html" },
+                { name: "第8课 开关量的或运算", description: "了解开关量的或运算的作用，认识开关量的原理", url: "https://www.xianjianaiedu.com/it/study/6-8.html" },
+                { name: "第9课 从人工到自动化", description: "了解从人工到自动化的作用，认识从人工到自动化的原理", url: "https://www.xianjianaiedu.com/it/study/6-9.html" },
+                { name: "第10课 开环控制应用广泛", description: "了解开环控制应用广泛的作用，认识开环控制的原理", url: "https://www.xianjianaiedu.com/it/study/6-10.html" },
+                { name: "第11课 通过反馈知效果", description: "了解通过反馈知效果的作用，认识反馈的原理", url: "https://www.xianjianaiedu.com/it/study/6-11.html" },
+                { name: "第12课 闭环控制助稳定", description: "了解闭环控制助稳定的作用，认识闭环控制的原理", url: "https://www.xianjianaiedu.com/it/study/6-12.html" },
+                { name: "第13课 控制系统有特点", description: "了解控制系统的不同特点", url: "https://www.xianjianaiedu.com/it/study/6-13.html" },
+                { name: "第14课 复杂系统可分解", description: "了解复杂系统分解的作用，认识分解复杂系统的方法", url: "https://www.xianjianaiedu.com/it/study/6-14.html" },
+                { name: "第15课 模块组装很灵活", description: "了解模块组装的作用，认识模块组装的方法", url: "https://www.xianjianaiedu.com/it/study/6-15.html" }
+            ]
+        };
+        
+        // 显示人教版学习手册弹窗
+        function showTextbookModal() {
+            const modal = document.getElementById('textbookModal');
+            const body = document.getElementById('textbookBody');
+            
+            // 生成教材内容HTML，首先添加使用教程按钮
+            let html = `
+                <div class="tools-category">
+                    <h4>使用教程</h4>
+                    <div class="tools-grid">
+                        <div class="tool-item" onclick="showTutorialModal()" style="cursor: pointer; background: linear-gradient(45deg, rgba(0, 245, 255, 0.1), rgba(0, 128, 255, 0.1)); border-color: rgba(0, 245, 255, 0.3);">
+                            <div class="tool-name"><i class="fas fa-play-circle" style="color: #00f5ff; margin-right: 8px;"></i>平台使用教程</div>
+                            <div class="tool-description">观看视频教程，快速了解平台功能和使用方法</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            Object.keys(textbookData).forEach(grade => {
+                html += `
+                    <div class="tools-category">
+                        <h4>${grade}</h4>
+                        <div class="tools-grid">
+                `;
+                
+                if (textbookData[grade].length === 0) {
+                    html += `
+                        <div class="tool-item" style="opacity: 0.6; cursor: default; background: rgba(255, 255, 255, 0.02);">
+                            <div class="tool-name">暂无内容</div>
+                            <div class="tool-description">该年级内容正在准备中，敬请期待</div>
+                        </div>
+                    `;
+                } else {
+                    textbookData[grade].forEach(lesson => {
+                        html += `
+                            <a href="${lesson.url}" target="_blank" class="tool-item">
+                                <div class="tool-name">${lesson.name}</div>
+                                <div class="tool-description">${lesson.description}</div>
+                            </a>
+                        `;
+                    });
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            body.innerHTML = html;
+            modal.classList.remove('hidden');
+        }
+        
+        // 隐藏人教版学习手册弹窗
+        function hideTextbookModal() {
+            document.getElementById('textbookModal').classList.add('hidden');
+        }
+        
+        // 点击弹窗外部关闭人教版学习手册弹窗
+        document.getElementById('textbookModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideTextbookModal();
+            }
+        });
+
+        // ==================== 使用教程弹窗功能 ====================
+        
+        // 显示使用教程弹窗
+        function showTutorialModal() {
+            document.getElementById('tutorialModal').classList.remove('hidden');
+        }
+        
+        // 隐藏使用教程弹窗
+        function hideTutorialModal() {
+            const modal = document.getElementById('tutorialModal');
+            const iframe = modal.querySelector('iframe');
+            
+            // 停止视频播放
+            if (iframe) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                // 重新设置src以确保视频完全停止
+                setTimeout(() => {
+                    iframe.src = currentSrc;
+                }, 100);
+            }
+            
+            modal.classList.add('hidden');
+        }
+        
+        // 点击弹窗外部关闭使用教程弹窗
+        document.getElementById('tutorialModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideTutorialModal();
+            }
+        });
+
+        // ==================== 我要使用弹窗功能 ====================
+        
+        // 显示我要使用弹窗
+        function showUseModal() {
+            document.getElementById('useModal').classList.remove('hidden');
+        }
+        
+        // 隐藏我要使用弹窗
+        function hideUseModal() {
+            document.getElementById('useModal').classList.add('hidden');
+        }
+        
+        // 点击弹窗外部关闭我要使用弹窗
+        document.getElementById('useModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideUseModal();
+            }
+        });
+
+        // ESC键关闭弹窗（集成到源代码保护的键盘监听中）
+        // 注意：ESC键处理已集成到上面的源代码保护keydown事件中
+    </script>
+</body>
+</html>
